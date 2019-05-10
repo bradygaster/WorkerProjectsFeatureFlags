@@ -36,9 +36,4 @@ namespace FeatureFlags
                     services.AddHostedService<Worker>();
                 });
     }
-
-    public class Features
-    {
-        public static string EnableInformationLogs => "EnableInformationLogs";
-    }
 }
