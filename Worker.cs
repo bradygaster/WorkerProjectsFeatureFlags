@@ -24,25 +24,17 @@ namespace FeatureFlags
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            using (IServiceScope scope = _serviceProvider.CreateScope())
+            while (!stoppingToken.IsCancellationRequested)
             {
-                var featureManager = 
-                    scope.ServiceProvider.GetRequiredService<IFeatureManager>();
-
-                while (!stoppingToken.IsCancellationRequested)
+                _serviceProvider.UseScopedService<IFeatureManager>(fm => 
                 {
-                    if(featureManager.IsEnabled(Features.EnableInformationLogs))
+                    if(fm.IsEnabled(Features.EnableInformationLogs))
                         _logger.LogInformation("Worker running at: {time}", 
                             DateTimeOffset.Now);
-                        
-                    await Task.Delay(10000, stoppingToken);
-                }
+                });
+                    
+                await Task.Delay(10000, stoppingToken);
             }
         }
-    }
-
-    public class Features
-    {
-        public static string EnableInformationLogs => "EnableInformationLogs";
     }
 }
